@@ -12,11 +12,11 @@ if errorlevel 1 (
   exit /b 1
 )
 
-echo [INFO] Starting CPA Cleanup Web UI...
+echo [INFO] Starting cpa-codex-cleanup Web UI...
 echo [INFO] URL: http://127.0.0.1:8123
 start "" "http://127.0.0.1:8123"
 
-python cpa_cleanup_web.py --host 127.0.0.1 --port 8123
+python cpa_codex_cleanup_web.py --host 127.0.0.1 --port 8123
 set EXIT_CODE=%ERRORLEVEL%
 
 if not "%EXIT_CODE%"=="0" (

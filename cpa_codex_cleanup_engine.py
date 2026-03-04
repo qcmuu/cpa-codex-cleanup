@@ -1,6 +1,6 @@
 
 #!/usr/bin/env python3
-"""CPA cleanup engine (rewritten).
+"""cpa-codex-cleanup engine (rewritten).
 
 Main public API for other modules:
 - web_defaults() -> dict
@@ -478,7 +478,7 @@ def execute_cleanup(payload: dict[str, Any], log: Optional[Callable[[str], None]
 
 def _parse_cli_args() -> argparse.Namespace:
     d = web_defaults()
-    parser = argparse.ArgumentParser(description="CPA cleanup engine")
+    parser = argparse.ArgumentParser(description="cpa-codex-cleanup engine")
     parser.add_argument("--management-url", default=d["management_url"], help="管理 API 根路径")
     parser.add_argument("--management-token", default=d["management_token"], help="管理 Token")
     parser.add_argument("--management-timeout", type=int, default=d["management_timeout"], help="管理接口超时(秒)")

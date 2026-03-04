@@ -1,6 +1,6 @@
 
 #!/usr/bin/env python3
-"""Rewritten CPA cleanup Web UI backend with async job progress."""
+"""cpa-codex-cleanup Web UI backend with async job progress."""
 
 from __future__ import annotations
 
@@ -21,7 +21,7 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parent
-ENGINE_SCRIPT = ROOT / "cpa_cleanup_engine.py"
+ENGINE_SCRIPT = ROOT / "cpa_codex_cleanup_engine.py"
 INDEX_HTML = ROOT / "web" / "index.html"
 
 
@@ -60,7 +60,7 @@ class CleanupEngineHost:
             if not self.script_path.exists():
                 raise FileNotFoundError(f"engine script not found: {self.script_path}")
 
-            spec = importlib.util.spec_from_file_location("cpa_cleanup_engine", str(self.script_path))
+            spec = importlib.util.spec_from_file_location("cpa_codex_cleanup_engine", str(self.script_path))
             if not spec or not spec.loader:
                 raise RuntimeError("failed to load cleanup engine script")
 
@@ -222,7 +222,7 @@ def _load_html(path: Path) -> str:
 
 
 def _parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="CPA cleanup web ui")
+    parser = argparse.ArgumentParser(description="cpa-codex-cleanup web ui")
     parser.add_argument("--host", default=os.getenv("CPA_WEB_HOST", "127.0.0.1"))
     parser.add_argument("--port", type=int, default=int(os.getenv("CPA_WEB_PORT", "8123")))
     return parser.parse_args()

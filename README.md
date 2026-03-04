@@ -1,4 +1,4 @@
-# CPA Cleanup Web UI
+# cpa-codex-cleanup
 
 一个面向 CPA 管理接口的开源清理工具，提供：
 
@@ -21,11 +21,11 @@
 
 ```text
 .
-├─ cpa_cleanup_engine.py   # 清理引擎核心逻辑
-├─ cpa_cleanup_web.py      # Web UI 后端（任务管理 + HTTP API）
+├─ cpa_codex_cleanup_engine.py   # 清理引擎核心逻辑
+├─ cpa_codex_cleanup_web.py      # Web UI 后端（任务管理 + HTTP API）
 ├─ web/
 │  └─ index.html           # Web UI 前端
-├─ run_web_ui.bat          # Windows 一键启动脚本
+├─ run_cpa_codex_cleanup.bat     # Windows 一键启动脚本
 └─ README.md
 ```
 
@@ -45,12 +45,12 @@ pip install curl_cffi
 
 直接双击：
 
-- `run_web_ui.bat`
+- `run_cpa_codex_cleanup.bat`
 
 或在终端执行：
 
 ```powershell
-.\run_web_ui.bat
+.\run_cpa_codex_cleanup.bat
 ```
 
 默认地址：
@@ -60,7 +60,7 @@ pip install curl_cffi
 ## 手动启动
 
 ```bash
-python cpa_cleanup_web.py --host 127.0.0.1 --port 8123
+python cpa_codex_cleanup_web.py --host 127.0.0.1 --port 8123
 ```
 
 ## Web 使用说明
