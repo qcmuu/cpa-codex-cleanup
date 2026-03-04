@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CPA 一键清理控制台</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --panel: rgba(255, 255, 255, 0.92);
+      --line: #d5deeb;
+      --ink: #102033;
+      --sub: #4f6278;
+      --ok: #198754;
+      --err: #dc3545;
+      --accent: #0b6cf0;
+      --accent2: #0747a6;
+      --mono: "JetBrains Mono", Consolas, "Courier New", monospace;
+      --sans: "IBM Plex Sans", "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: var(--sans);
+      color: var(--ink);
+      background:
+        radial-gradient(1000px 460px at 16% -8%, #d8e7ff 0%, transparent 56%),
+        radial-gradient(1000px 600px at 86% 4%, #d6f5ec 0%, transparent 45%),
+        var(--bg);
+      padding: 24px 14px 34px;
+    }
+
+    .app {
+      width: min(1120px, 100%);
+      margin: 0 auto;
+      display: grid;
+      gap: 14px;
+      animation: in 320ms ease-out;
+    }
+
+    .hero, .panel {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: 14px;
+      backdrop-filter: blur(6px);
+      box-shadow: 0 10px 30px rgba(12, 28, 48, 0.07);
+    }
+
+    .hero { padding: 16px 18px; }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(24px, 3vw, 30px);
+      letter-spacing: 0.2px;
+    }
+
+    .desc {
+      margin-top: 6px;
+      font-size: 14px;
+      color: var(--sub);
+    }
+
+    .grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: 1.05fr 1fr;
+    }
+
+    .panel { padding: 14px; }
+
+    .panel h2 {
+      margin: 0 0 12px;
+      font-size: 16px;
+      color: #102844;
+    }
+
+    .field { display: grid; gap: 6px; margin-bottom: 10px; }
+
+    .row { display: grid; gap: 10px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+    label { font-size: 12px; color: var(--sub); font-weight: 600; letter-spacing: 0.2px; }
+
+    input[type="text"],
+    input[type="password"],
+    input[type="number"] {
+      width: 100%;
+      border: 1px solid #b9c8dd;
+      border-radius: 10px;
+      background: #fff;
+      color: #0f1f33;
+      padding: 9px 10px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color .15s ease, box-shadow .15s ease;
+    }
+
+    input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(11, 108, 240, 0.14);
+    }
+
+    .inline { display: flex; align-items: center; gap: 8px; }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 18px;
+      color: #fff;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      cursor: pointer;
+      transition: filter .12s ease, transform .12s ease;
+    }
+
+    button:hover:not(:disabled) { filter: brightness(1.04); }
+    button:active:not(:disabled) { transform: translateY(1px); }
+    button:disabled { opacity: .55; cursor: not-allowed; }
+
+    .status { min-height: 18px; color: var(--sub); font-size: 13px; }
+    .status.ok { color: var(--ok); }
+    .status.err { color: var(--err); }
+
+    .summary {
+      margin-top: 10px;
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+      padding: 10px;
+    }
+
+    .metric .k { font-size: 12px; color: var(--sub); }
+    .metric .v { margin-top: 4px; font-size: 21px; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+    pre {
+      margin: 0;
+      min-height: 340px;
+      max-height: 58vh;
+      overflow: auto;
+      border: 1px solid #cfdaea;
+      border-radius: 10px;
+      padding: 12px;
+      background: #0f1b2d;
+      color: #d9e6ff;
+      font: 12px/1.45 var(--mono);
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    @keyframes in {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: 1fr; }
+      .row { grid-template-columns: 1fr; }
+      .summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      pre { min-height: 250px; }
+    }
+
+    @media (max-width: 640px) {
+      .summary { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="hero">
+      <h1>CPA 一键清理控制台</h1>
+      <div class="desc">点击执行后可实时查看进度日志，任务结束自动展示统计。</div>
+    </section>
+
+    <section class="grid">
+      <section class="panel">
+        <h2>执行配置</h2>
+
+        <div class="field">
+          <label for="management_url">Management URL</label>
+          <input id="management_url" type="text" placeholder="http://127.0.0.1:8317/management.html" />
+        </div>
+
+        <div class="field">
+          <label for="management_token">Management Token</label>
+          <input id="management_token" type="password" placeholder="Bearer token（不带 Bearer）" />
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label for="management_timeout">管理接口超时（秒）</label>
+            <input id="management_timeout" type="number" min="1" value="15" />
+          </div>
+          <div class="field">
+            <label for="probe_timeout">探测超时（秒）</label>
+            <input id="probe_timeout" type="number" min="1" value="8" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label for="probe_workers">探测并发</label>
+            <input id="probe_workers" type="number" min="1" value="12" />
+          </div>
+          <div class="field">
+            <label for="delete_workers">删除并发</label>
+            <input id="delete_workers" type="number" min="1" value="8" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label for="max_active_probes">最大探测数量（0=不探测）</label>
+            <input id="max_active_probes" type="number" min="0" value="120" />
+          </div>
+          <div class="field inline">
+            <input id="active_probe" type="checkbox" checked />
+            <label for="active_probe">开启主动探测</label>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button id="run_btn" type="button">执行清理</button>
+          <span id="status" class="status">等待执行</span>
+        </div>
+
+        <div class="summary">
+          <div class="metric"><div class="k">扫描总数</div><div class="v" id="m_scanned">-</div></div>
+          <div class="metric"><div class="k">命中数量</div><div class="v" id="m_matched">-</div></div>
+          <div class="metric"><div class="k">主流程删除</div><div class="v" id="m_deleted_main">-</div></div>
+          <div class="metric"><div class="k">401 补删</div><div class="v" id="m_deleted_401">-</div></div>
+          <div class="metric"><div class="k">总删除</div><div class="v" id="m_deleted_total">-</div></div>
+          <div class="metric"><div class="k">失败数</div><div class="v" id="m_failed">-</div></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>实时日志</h2>
+        <pre id="logs">(暂无日志)</pre>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const els = {
+      management_url: document.getElementById("management_url"),
+      management_token: document.getElementById("management_token"),
+      management_timeout: document.getElementById("management_timeout"),
+      probe_timeout: document.getElementById("probe_timeout"),
+      probe_workers: document.getElementById("probe_workers"),
+      delete_workers: document.getElementById("delete_workers"),
+      max_active_probes: document.getElementById("max_active_probes"),
+      active_probe: document.getElementById("active_probe"),
+      run_btn: document.getElementById("run_btn"),
+      status: document.getElementById("status"),
+      logs: document.getElementById("logs"),
+      m_scanned: document.getElementById("m_scanned"),
+      m_matched: document.getElementById("m_matched"),
+      m_deleted_main: document.getElementById("m_deleted_main"),
+      m_deleted_401: document.getElementById("m_deleted_401"),
+      m_deleted_total: document.getElementById("m_deleted_total"),
+      m_failed: document.getElementById("m_failed"),
+    };
+
+    let pollTimer = null;
+    let currentTaskId = "";
+
+    function setStatus(text, kind = "") {
+      els.status.textContent = text;
+      els.status.className = `status ${kind}`;
+    }
+
+    function toNum(v) {
+      return Number.isFinite(v) ? String(v) : "-";
+    }
+
+    function metric(el, val) {
+      el.textContent = toNum(val);
+    }
+
+    function parseNum(input, fallback) {
+      const n = Number(input.value);
+      return Number.isFinite(n) ? n : fallback;
+    }
+
+    function resetMetrics() {
+      metric(els.m_scanned, NaN);
+      metric(els.m_matched, NaN);
+      metric(els.m_deleted_main, NaN);
+      metric(els.m_deleted_401, NaN);
+      metric(els.m_deleted_total, NaN);
+      metric(els.m_failed, NaN);
+    }
+
+    function payload() {
+      return {
+        management_url: els.management_url.value.trim(),
+        management_token: els.management_token.value.trim(),
+        management_timeout: parseNum(els.management_timeout, 15),
+        probe_timeout: parseNum(els.probe_timeout, 8),
+        probe_workers: parseNum(els.probe_workers, 12),
+        delete_workers: parseNum(els.delete_workers, 8),
+        max_active_probes: parseNum(els.max_active_probes, 120),
+        active_probe: !!els.active_probe.checked,
+      };
+    }
+
+    async function loadDefaults() {
+      try {
+        const resp = await fetch("/api/defaults");
+        const data = await resp.json();
+        if (!resp.ok || !data.ok) throw new Error(data.error || `HTTP ${resp.status}`);
+        const d = data.defaults || {};
+        els.management_url.value = d.management_url || "";
+        els.management_token.value = d.management_token || "";
+        els.management_timeout.value = d.management_timeout || 15;
+        els.probe_timeout.value = d.probe_timeout || 8;
+        els.probe_workers.value = d.probe_workers || 12;
+        els.delete_workers.value = d.delete_workers || 8;
+        els.max_active_probes.value = d.max_active_probes || 120;
+        els.active_probe.checked = !!d.active_probe;
+      } catch (err) {
+        setStatus(`加载默认配置失败: ${err.message}`, "err");
+      }
+    }
+
+    async function pollTask(taskId) {
+      const resp = await fetch(`/api/tasks/${encodeURIComponent(taskId)}`);
+      const data = await resp.json();
+      if (!resp.ok || !data.ok) throw new Error(data.error || `HTTP ${resp.status}`);
+
+      if (typeof data.logs === "string") {
+        els.logs.textContent = data.logs || "(无日志)";
+        els.logs.scrollTop = els.logs.scrollHeight;
+      }
+
+      const s = data.summary || null;
+      if (s) {
+        metric(els.m_scanned, s.scanned_total ?? NaN);
+        metric(els.m_matched, s.matched_total ?? NaN);
+        metric(els.m_deleted_main, s.deleted_main ?? NaN);
+        metric(els.m_deleted_401, s.deleted_401 ?? NaN);
+        metric(els.m_deleted_total, s.deleted_total ?? NaN);
+        const failCount = Array.isArray(s.failures) ? s.failures.length : NaN;
+        metric(els.m_failed, failCount);
+      }
+
+      if (data.status === "running") {
+        setStatus(`执行中（任务 ${taskId.slice(0, 8)}）...`, "");
+        return;
+      }
+
+      clearInterval(pollTimer);
+      pollTimer = null;
+      currentTaskId = "";
+      els.run_btn.disabled = false;
+
+      if (data.status === "completed") {
+        setStatus("清理完成", "ok");
+      } else {
+        setStatus(`执行失败: ${data.error || "未知错误"}`, "err");
+      }
+    }
+
+    function startPolling(taskId) {
+      if (pollTimer) clearInterval(pollTimer);
+      pollTimer = setInterval(() => {
+        pollTask(taskId).catch(err => {
+          clearInterval(pollTimer);
+          pollTimer = null;
+          currentTaskId = "";
+          els.run_btn.disabled = false;
+          setStatus(`轮询失败: ${err.message}`, "err");
+        });
+      }, 1000);
+      pollTask(taskId).catch(err => {
+        clearInterval(pollTimer);
+        pollTimer = null;
+        currentTaskId = "";
+        els.run_btn.disabled = false;
+        setStatus(`轮询失败: ${err.message}`, "err");
+      });
+    }
+
+    els.run_btn.addEventListener("click", async () => {
+      if (currentTaskId) return;
+
+      els.run_btn.disabled = true;
+      resetMetrics();
+      els.logs.textContent = "(任务已提交，等待执行...)";
+      setStatus("提交任务中...", "");
+
+      try {
+        const resp = await fetch("/api/tasks", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload()),
+        });
+        const data = await resp.json();
+        if (!resp.ok || !data.ok) {
+          throw new Error(data.error || `HTTP ${resp.status}`);
+        }
+
+        currentTaskId = data.task_id;
+        setStatus(`任务已启动（${currentTaskId.slice(0, 8)}）`, "");
+        startPolling(currentTaskId);
+      } catch (err) {
+        els.run_btn.disabled = false;
+        setStatus(`启动失败: ${err.message}`, "err");
+      }
+    });
+
+    loadDefaults();
+  </script>
+</body>
+</html>
