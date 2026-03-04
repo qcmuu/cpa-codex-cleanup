@@ -56,8 +56,9 @@ cd cpa-codex-cleanup
 方式 B：下载 ZIP
 
 1. 打开仓库主页：`https://github.com/qcmuu/cpa-codex-cleanup`
-2. 点击 `Code` -> `Download ZIP`
-3. 解压 ZIP 后进入项目目录
+2. 点击页面右上方 `<> Code`（中文界面为“代码”）-> `Download ZIP`
+3. 或直接下载：`https://github.com/qcmuu/cpa-codex-cleanup/archive/refs/heads/main.zip`
+4. 解压 ZIP 后进入项目目录
 
 ### 2) 安装依赖
 
