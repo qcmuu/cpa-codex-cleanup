@@ -1,5 +1,5 @@
 # cpa-codex-cleanup
-
+<img width="1138" height="745" alt="image" src="https://github.com/user-attachments/assets/a11fc24e-6f85-4e64-8da7-9e8932d5b08f" />
 一个面向 CPA 管理接口的开源清理工具，提供：
 
 - Web 可视化操作界面
@@ -8,6 +8,8 @@
 - 清理结果统计（扫描数、命中数、删除数、失败数）
 
 项目适合个人维护与团队协作，也适合 fork 后二次开发。
+
+
 
 ## 功能概览
 
