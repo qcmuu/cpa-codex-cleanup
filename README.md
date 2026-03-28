@@ -52,6 +52,28 @@ pip install curl_cffi
 
 启动后访问：`http://127.0.0.1:8123`
 
+### 4) 一键启动（macOS / Linux）
+
+先给脚本执行权限：
+
+```bash
+chmod +x run_cpa_codex_cleanup.sh
+```
+
+执行脚本：
+
+```bash
+./run_cpa_codex_cleanup.sh
+```
+
+脚本会自动：
+
+- 检测 Python 3.10+
+- 创建并复用 `.venv`
+- 安装缺失依赖 `curl_cffi`
+
+启动后访问：`http://127.0.0.1:8123`
+
 ## 使用教程
 
 1. 打开 `http://127.0.0.1:8123`
@@ -102,6 +124,7 @@ python cpa_codex_cleanup_web.py --host 127.0.0.1 --port 8123
 ├─ cpa_codex_cleanup_engine.py
 ├─ cpa_codex_cleanup_web.py
 ├─ run_cpa_codex_cleanup.bat
+├─ run_cpa_codex_cleanup.sh
 ├─ web/
 │  └─ index.html
 ├─ README.md
